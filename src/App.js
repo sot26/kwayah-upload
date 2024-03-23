@@ -1,55 +1,46 @@
-import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Home";
 import AddMusic from "./pages/AddMusic";
 import VIewMusic from "./pages/VIewMusic";
-import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
-import { useState } from "react";
-import { signOut } from "firebase/auth";
-import { auth } from "./config";
+import { AuthContextProvider } from "./context/AuthContext";
+import Header from "./components/Header";
+import Navbar from "./components/Navbar";
+import MusicDetails from "./pages/MusicDetails";
+import AddVideo from "./pages/AddVideo";
+import ViewVideo from "./pages/ViewVideo";
+import VideoDetails from "./pages/VideoDetails";
+import AddNews from "./pages/AddNews";
+import ViewNews from "./pages/ViewNews";
+import NewsDetails from "./pages/NewsDetails";
 
 function App() {
-  const [isAuth, setIsAuth] = useState(false);
-  const logoutUser = () => {
-    signOut(auth)
-      .then(() => {
-        setIsAuth(false);
-        localStorage.clear();
-        setIsAuth(false);
-        toast.success("Logout Successful");
-        window.location.pathname = "/login";
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
-  };
-  console.log(isAuth);
   return (
-    <BrowserRouter>
-      <ToastContainer />
-      <div className="w-full px-12 text-2xl font-bold my-3 flex justify-between ">
-        <div>
-          <Link to="/">KWAYAH MUSIC</Link>
-        </div>
-        <div>
-          {isAuth ? (
-            <button onClick={logoutUser}>Logout</button>
-          ) : (
-            <Link to="/login">Login</Link>
-          )}
-        </div>
-      </div>
-      {!isAuth ? "" : <Navbar setIsAuth={setIsAuth} />}
-      <Routes>
-        <Route path="/" element={<Home isAuth={isAuth} />} />
-        <Route path="/add-music/:id" element={<AddMusic isAuth={isAuth} />} />
-        <Route path="/view-music" element={<VIewMusic isAuth={isAuth} />} />
-        <Route path="/login" element={<Login setIsAuth={setIsAuth} />} />
-      </Routes>
-    </BrowserRouter>
+    <div>
+      <AuthContextProvider>
+        <BrowserRouter>
+          <Header />
+          <Navbar />
+          <ToastContainer />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/add-music" element={<AddMusic />} />
+            <Route path="/add-video" element={<AddVideo />} />
+            <Route path="/add-news" element={<AddNews />} />
+            <Route path="/view-music" element={<VIewMusic />} />
+            <Route path="/view-video" element={<ViewVideo />} />
+            <Route path="/view-news" element={<ViewNews />} />
+            <Route path="/view-music/:id" element={<MusicDetails />} />
+            <Route path="/view-video/:id" element={<VideoDetails />} />
+            <Route path="/view-news/:id" element={<NewsDetails />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthContextProvider>
+    </div>
   );
 }
 

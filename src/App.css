@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
 /* loading effect  */
 .loading-wave {
   width: 300px;
@@ -47,3 +49,8 @@
 }
 
 /* end of loading effect */
+body {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}

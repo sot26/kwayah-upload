@@ -5,23 +5,23 @@ import { toast } from "react-toastify";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 
-const AddMusic = () => {
+const AddVideo = () => {
   const [artist, setArtist] = useState("");
   const [title, setTitle] = useState("");
   const [releaseDate, setReleaseDate] = useState("");
   const [description, setDescription] = useState("");
   const [info, setInfo] = useState("");
-  const [audioFile, setAudioFile] = useState(null);
+  const [videoFile, setVideoFile] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  const [uploadProgressAudio, setUploadProgressAudio] = useState(0);
+  const [uploadProgressVideo, setUploadProgressVideo] = useState(0);
   const [uploadProgressImage, setUploadProgressImage] = useState(0);
 
   const navigate = useNavigate();
 
-  // upload music
-  const handleMusic = (e) => {
+  // upload video
+  const handleVideo = (e) => {
     const file = e.target.files[0];
-    const storageRef = ref(storage, `music/${Date.now()} ${file.name}`);
+    const storageRef = ref(storage, `videos/${Date.now()} ${file.name}`);
 
     const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -30,15 +30,15 @@ const AddMusic = () => {
       (snapshot) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setUploadProgressAudio(progress);
+        setUploadProgressVideo(progress);
       },
       (error) => {
         toast.error(error.message);
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setAudioFile(downloadURL);
-          toast.success("audio uploaded successfully");
+          setVideoFile(downloadURL);
+          toast.success("video uploaded successfully");
         });
       }
     );
@@ -47,7 +47,7 @@ const AddMusic = () => {
   // upload image
   const handleImage = (e) => {
     const file = e.target.files[0];
-    const storageRef = ref(storage, `music/${Date.now()} ${file.name}`);
+    const storageRef = ref(storage, `videos/${Date.now()} ${file.name}`);
 
     const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -73,25 +73,25 @@ const AddMusic = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     try {
-      const docRef = addDoc(collection(db, "music"), {
+      const docRef = addDoc(collection(db, "videos"), {
         artist: artist,
         title: title,
         releaseDate: releaseDate,
         description: description,
         info: info,
         imageURL: imageFile,
-        audioURL: audioFile,
+        videoURL: videoFile,
       });
-      toast.success("music successfully uploaded");
+      toast.success("video successfully uploaded");
       setArtist("");
-      setAudioFile("");
+      setVideoFile("");
       setDescription("");
       setInfo("");
       setReleaseDate("");
       setTitle("");
       setUploadProgressImage("");
-      setUploadProgressAudio("");
-      navigate("/view-music");
+      setUploadProgressVideo("");
+      navigate("/view-video");
     } catch (error) {
       toast.error(error.message);
     }
@@ -122,30 +122,30 @@ const AddMusic = () => {
               required
               onChange={(e) => setTitle(e.target.value)}
               type="text"
-              placeholder="Music Title"
+              placeholder="VideoTitle"
               className="border-[1px] border-black rounded-lg p-[3px]"
             />
           </div>
           <div className="flex flex-col mb-2">
             <div className="group w-full border-2 rounded-2xl">
-              {uploadProgressAudio === 0 ? null : (
+              {uploadProgressVideo === 0 ? null : (
                 <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700 my-3">
                   <div
                     className="bg-green-400 text-lg font-medium text-blue-100 text-center p-0.5 leading-none rounded-full h-7"
-                    style={{ width: `${uploadProgressAudio}%` }}
+                    style={{ width: `${uploadProgressVideo}%` }}
                   >
-                    {uploadProgressAudio < 100
-                      ? `uploading ${uploadProgressAudio}%`
-                      : `upload complete ${uploadProgressAudio}%`}
+                    {uploadProgressVideo < 100
+                      ? `uploading ${uploadProgressVideo}%`
+                      : `upload complete ${uploadProgressVideo}%`}
                   </div>
                 </div>
               )}
-              <label className="text-xl font-semibold">Audio</label>
+              <label className="text-xl font-semibold">Video</label>
               <input
                 type="file"
                 required
-                placeholder="audio"
-                onChange={(e) => handleMusic(e)}
+                placeholder="Video"
+                onChange={(e) => handleVideo(e)}
                 className="w-full border-[1px] border-black rounded-lg p-[3px]"
               />
             </div>
@@ -197,17 +197,17 @@ const AddMusic = () => {
             />
           </div>
           <div className="flex flex-col mb-2">
-            <label className="text-xl font-semibold">Music Info</label>
+            <label className="text-xl font-semibold">Video Info</label>
             <textarea
               value={info}
               required
               onChange={(e) => setInfo(e.target.value)}
               type="text"
-              placeholder="Music Info"
+              placeholder="Video Info"
               className="border-[1px] border-black rounded-lg p-[3px]"
             />
           </div>
-          <button type="Submit" className="bg-black text-white py-2 rounded-xl">
+          <button type="submit" className="bg-black text-white py-2 rounded-xl">
             submit
           </button>
         </form>
@@ -216,4 +216,4 @@ const AddMusic = () => {
   );
 };
 
-export default AddMusic;
+export default AddVideo;

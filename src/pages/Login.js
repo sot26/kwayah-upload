@@ -1,30 +1,31 @@
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import React from "react";
-import { auth } from "../config";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { UserAuth } from "../context/AuthContext";
+import { useEffect } from "react";
 
-const Login = ({ setIsAuth }) => {
+const Login = () => {
+  const { googleSignIn, user } = UserAuth();
   const navigate = useNavigate();
-  const provider = new GoogleAuthProvider();
-  const loginWithGoogle = () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        toast.success("Logged In Successfully");
-        setIsAuth(true);
-        navigate("/");
-        localStorage.setItem("isAuth", true);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleSignIn();
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user]);
+
   return (
     <div className="w-full h-screen flex justify-center items-center">
       <button
-        onClick={loginWithGoogle}
+        onClick={handleGoogleSignIn}
         className="flex bg-white h-[40px] hover:bg-black hover:text-white shadow-lg px-[15px] w-auto items-center justify-center text-xl font-semibold mt-3 mb-6 rounded-lg"
       >
         <FcGoogle size={30} />

@@ -3,22 +3,22 @@ import React, { useEffect, useState } from "react";
 import { db } from "../config";
 import { Link } from "react-router-dom";
 
-const VIewMusic = () => {
-  const [music, setMusic] = useState([]);
-  const docRef = collection(db, "music");
+const ViewNews = () => {
+  const [news, setNews] = useState([]);
+  const docRef = collection(db, "news");
 
   useEffect(() => {
-    const getMusic = async () => {
-      const music = await getDocs(docRef);
-      setMusic(music.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    const getNews = async () => {
+      const news = await getDocs(docRef);
+      setNews(news.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
-    getMusic();
+    getNews();
   }, []);
-  console.log(music);
+  console.log(news);
 
   return (
     <div className="w-full min-h-[100vh]">
-      {music.length === 0 ? (
+      {news.length === 0 ? (
         <div className="flex justify-center items-center w-full min-h-[100vh]">
           <div className="loading-wave ">
             <div className="loading-bar"></div>
@@ -28,20 +28,11 @@ const VIewMusic = () => {
           </div>
         </div>
       ) : (
-        music.map((mus, index) => {
-          const {
-            artist,
-            audioURL,
-            description,
-            id,
-            imageURL,
-            info,
-            releaseDate,
-            title,
-          } = mus;
+        news.map((ne, index) => {
+          const { id, imageURL, title, description } = ne;
           return (
             <div>
-              <Link to={`/view-music/${id}`}>
+              <Link to={`/view-news/${id}`}>
                 <div
                   className="my-6 mx-20 flex flex-row border-[1px] border-black"
                   key={index}
@@ -56,7 +47,6 @@ const VIewMusic = () => {
                     />
                   </div>
                   <div className="flex flex-col justify-center pl-6">
-                    <p className="text-xl font-bold">{artist}</p>
                     <p className="text-xl font-medium">{title}</p>
                   </div>
                 </div>
@@ -69,4 +59,4 @@ const VIewMusic = () => {
   );
 };
 
-export default VIewMusic;
+export default ViewNews;
