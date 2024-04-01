@@ -1,17 +1,18 @@
-import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../config";
 import { deleteObject, ref } from "firebase/storage";
 import { toast } from "react-toastify";
 
 const MusicDetails = () => {
+  const [music, setMusic] = useState(null);
+  const [artist, setArtist] = useState("");
+  const [title, setTitle] = useState("");
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
-
-  const [music, setMusic] = useState(null); // Change initial state to null or an empty object if you prefer
 
   useEffect(() => {
     const getMusic = async () => {
@@ -26,14 +27,36 @@ const MusicDetails = () => {
     };
 
     getMusic();
-  }, [id]); // Include id in dependency array
+  }, [id]);
+
+  useEffect(() => {
+    if (music) {
+      setArtist(music.artist);
+      setTitle(music.title);
+    }
+  }, [music]);
+
+  const handleUpdate = async () => {
+    try {
+      const musicDocRef = doc(db, "music", id);
+      await updateDoc(musicDocRef, {
+        artist,
+        title,
+        // other fields you want to update
+      });
+
+      toast.success("Document updated successfully");
+      window.location.reload();
+      navigate(`/view-music/${id}`);
+    } catch (error) {
+      toast.error("Error updating document: " + error.message);
+    }
+  };
 
   const handleDelete = async () => {
     try {
-      // Delete document from Firestore
       await deleteDoc(doc(db, "music", id));
 
-      // Delete files from storage
       const storagePathImage = music.imageURL;
       const storagePathAudio = music.audioURL;
 
@@ -57,20 +80,19 @@ const MusicDetails = () => {
   const handleComment = async (e) => {
     e.preventDefault();
     try {
-      // Update document in Firestore
       const musicDocRef = doc(db, "music", id);
       await updateDoc(musicDocRef, {
         comments: [...(music.comments || []), { name, comment }],
       });
 
       toast.success("Comment added successfully");
-      // Clear input fields after adding comment
       setName("");
       setComment("");
     } catch (error) {
       toast.error(error.message);
     }
   };
+
   const handleDeleteComment = async (commentIndex) => {
     try {
       const updatedComments = music.comments.filter(
@@ -131,6 +153,22 @@ const MusicDetails = () => {
               </button>
             </form>
           </div>
+          <div>
+            <input
+              type="text"
+              placeholder="Artist"
+              value={artist}
+              onChange={(e) => setArtist(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            {/* Add input fields for other fields */}
+            <button onClick={handleUpdate}>Update</button>
+          </div>
         </div>
       ) : (
         <div className="flex justify-center items-center w-full min-h-[100vh]">
@@ -143,7 +181,7 @@ const MusicDetails = () => {
         </div>
       )}
     </div>
-  ); // Adjust UI to handle loading state
+  );
 };
 
 export default MusicDetails;
