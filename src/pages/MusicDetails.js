@@ -47,7 +47,7 @@ const MusicDetails = () => {
 
       toast.success("Document updated successfully");
       window.location.reload();
-      navigate(`/view-music/${id}`);
+      navigate(`/view-news/${id}`);
     } catch (error) {
       toast.error("Error updating document: " + error.message);
     }
